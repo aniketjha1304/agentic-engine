@@ -1,0 +1,15 @@
+import azure.functions as func
+from utils.logger import logger
+
+app = func.Blueprint()
+
+@app.function_name(name="{workflow_function_name}")
+@app.timer_trigger(schedule="{cron_expression}", arg_name="timer", run_on_startup=False, use_monitor=True)
+async def main_function(timer: func.TimerRequest) -> None:
+    from .{folder_name} import main as workflow_main
+    data = {{}} # Proxy for consistency.
+    try:
+        await workflow_main(data=data)
+    except Exception as e:
+        logger.error(f"Error executing workflow:")
+        logger.error(str(e))

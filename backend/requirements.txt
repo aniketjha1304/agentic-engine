@@ -1,0 +1,15 @@
+agent-builder==0.1.7
+python-dotenv
+msal
+fastapi
+uvicorn
+psycopg2==2.9.10
+alembic
+sqlalchemy
+asyncpg
+jsonschema
+twilio
+python-multipart
+cognitive-space
+stripe
+apscheduler

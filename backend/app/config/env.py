@@ -1,0 +1,68 @@
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+
+API_KEYS = [os.getenv("API_KEY")]
+
+
+# New configurations for multi tenant application
+CHAT_DB_URL = os.getenv("CHAT_DB_URL")
+
+if "sslmode=" in CHAT_DB_URL:
+    CHAT_DB_URL = CHAT_DB_URL.split("?")[0]
+
+AI_PERSONA_HUB_DB_URL = os.getenv("AI_PERSONA_HUB_DB_URL")
+
+
+AZURE_GPT4O_BASE_URL = os.getenv("AZURE_GPT4O_BASE_URL")
+AZURE_GPT4O_REALTIME_PREVIEW_URL = os.getenv("AZURE_GPT4O_REALTIME_PREVIEW_URL")
+AZURE_GPT4O_REALTIME_PREVIEW_KEY = os.getenv("AZURE_GPT4O_REALTIME_PREVIEW_KEY")
+AZURE_GPT4O_KEY = os.getenv("AZURE_GPT4O_KEY")
+AZURE_GPT4O_API_VERSION = os.getenv("AZURE_GPT4O_API_VERSION")
+
+
+# Azure Repo related variables
+DEVOPS_ORGANIZATION_NAME = os.getenv("DEVOPS_ORGANIZATION_NAME")
+PROJECT_NAME = os.getenv("PROJECT_NAME")
+WORKFLOWS_REPO_NAME = os.getenv("WORKFLOWS_REPO_NAME")
+WORKFLOW_FUNCTIONS_REPO_NAME = os.getenv("WORKFLOW_FUNCTIONS_REPO_NAME")
+AZURE_PAT_TOKEN = os.getenv("AZURE_PAT_TOKEN")
+
+# Organization Id
+ORGANIZATION_ID = int(os.getenv("ORGANIZATION_ID"))
+
+
+# Workflow Azure Functions App
+WORKFLOW_FUNCTION_APP_URL = os.getenv("WORKFLOW_FUNCTION_APP_URL")
+WORKFLOW_FUNCTION_APP_MASTER_KEY = os.getenv("WORKFLOW_FUNCTION_APP_MASTER_KEY")
+
+# Env for lisa's identity
+LISA_USER_NAME = os.getenv("LISA_USER_NAME")
+LISA_PASSWORD = os.getenv("LISA_PASSWORD")
+CLIENT_ID = os.getenv("CLIENT_ID")
+TENANT_ID = os.getenv("TENANT_ID")
+
+
+# Memory (Cognitive Space) related enviornment variables.
+LISA_INDEX_NAME = os.getenv("LISA_INDEX_NAME")
+EMBEDDINGS_KEY = os.getenv("EMBEDDINGS_KEY")
+EMBEDDINGS_BASE_URL = os.getenv("EMBEDDINGS_BASE_URL")
+AZURE_AI_SEARCH_BASE_URL = os.getenv("AZURE_AI_SEARCH_BASE_URL")
+AZURE_AI_SEARCH_API_KEY = os.getenv("AZURE_AI_SEARCH_API_KEY")
+
+
+# Azure queue
+AZURE_STORAGE_CONNECTION_STRING = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
+QUEUE_NAME = os.getenv("QUEUE_NAME")
+ENABLE_MESSAGE_DEQUEUE = os.getenv("ENABLE_MESSAGE_DEQUEUE")
+
+
+# Bookings service
+BOOKINGS_SERVICE_URL = os.getenv("BOOKINGS_SERVICE_URL")
+
+
+# TWILIO
+TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
+TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")

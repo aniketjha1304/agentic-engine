@@ -1,0 +1,35 @@
+trigger:
+  - dev
+
+pool:
+  vmImage: 'ubuntu-latest'  # Use your self-hosted agent pool
+
+variables:
+  imageName: 'lisa-engine-dev'
+  imageTag: 'guest'
+  acrLoginServer: 'recallcontainers.azurecr.io'
+  containerRegistry: 'recallcontainers'
+
+steps:
+  - task: AzureCLI@2
+    displayName: 'Build and Push Lisa Engine Dev Image to ACR'
+    inputs:
+      azureSubscription: 'RecallSpaceAppResources'
+      scriptType: 'bash'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+        #!/bin/bash
+
+        echo "Logging into Azure Container Registry..."
+        az acr login --name $(containerRegistry)
+
+        # Build the Docker image
+        echo "Building the Docker image..."
+        docker build --build-arg PAT=$(PAT) -t  $(imageName):$(imageTag) .
+        
+        echo "Tag the Docker image..."
+        docker tag $(imageName):$(imageTag) $(acrLoginServer)/$(imageName):$(imageTag)
+
+        # Push the Docker image to ACR
+        echo "Pushing the Docker image to ACR..."
+        docker push "$(acrLoginServer)/$(imageName):$(imageTag)"

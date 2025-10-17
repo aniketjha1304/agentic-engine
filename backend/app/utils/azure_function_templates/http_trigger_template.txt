@@ -1,0 +1,17 @@
+import azure.functions as func
+from utils.logger import logger
+
+app = func.Blueprint()
+
+@app.function_name(name="{workflow_function_name}")
+@app.route(route="{route}", methods=[func.HttpMethod.GET, func.HttpMethod.POST])
+async def main_function(req: func.HttpRequest) -> func.HttpResponse:
+    from .{folder_name} import main as workflow_main
+    try:
+        # Call the workflow's main function, passing the HttpRequest object
+        result = await workflow_main(req.get_json())
+        return func.HttpResponse(str(result), status_code=200)
+    except Exception as e:
+        logger.error(f"Error executing workflow:")
+        logger.error(str(e))
+        return func.HttpResponse(str(e), status_code=500)
