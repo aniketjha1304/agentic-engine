@@ -7,13 +7,9 @@ load_dotenv()
 API_KEYS = [os.getenv("API_KEY")]
 
 
-# New configurations for multi tenant application
-CHAT_DB_URL = os.getenv("CHAT_DB_URL")
-
-if "sslmode=" in CHAT_DB_URL:
-    CHAT_DB_URL = CHAT_DB_URL.split("?")[0]
-
-AI_PERSONA_HUB_DB_URL = os.getenv("AI_PERSONA_HUB_DB_URL")
+# MongoDB Configuration
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017")
+MONGO_DB_NAME = os.getenv("MONGO_DB_NAME", "agentic_engine")
 
 
 AZURE_GPT4O_BASE_URL = os.getenv("AZURE_GPT4O_BASE_URL")

@@ -3,13 +3,9 @@ python-dotenv
 msal
 fastapi
 uvicorn
-psycopg2==2.9.10
-alembic
-sqlalchemy
-asyncpg
+motor==3.3.2
+pymongo==4.6.1
 jsonschema
-twilio
 python-multipart
-cognitive-space
-stripe
-apscheduler
+pydantic
+httpx
