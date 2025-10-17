@@ -1,6 +1,7 @@
 """
 Main Chat Agent endpoint - Handles chat messages with dynamic agent invocation
 """
+
 from fastapi import APIRouter, HTTPException, Depends
 from app.database.schemas import ChatMessageRequest, ChatMessageResponse, Message
 from app.database.new_chat_queries import (
@@ -19,10 +20,10 @@ router = APIRouter()
 def convert_messages_to_langchain(messages: list) -> list:
     """
     Convert database messages to LangChain message format
-    
+
     Args:
         messages: List of Message objects from database
-        
+
     Returns:
         List of LangChain messages
     """
@@ -55,7 +56,7 @@ def convert_messages_to_langchain(messages: list) -> list:
 async def chat_with_agent(request: ChatMessageRequest):
     """
     Main chat endpoint that processes messages through configured agents
-    
+
     Flow:
     1. Validate chat exists
     2. Fetch message history

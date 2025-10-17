@@ -1,6 +1,7 @@
 """
 Agent API routes for CRUD operations
 """
+
 from fastapi import APIRouter, HTTPException, Depends, status
 from typing import List
 from app.database.schemas import (
@@ -83,7 +84,9 @@ async def get_agent(agent_name: str):
     try:
         agent_info = await get_agent_info(agent_name)
         if not agent_info:
-            raise HTTPException(status_code=404, detail=f"Agent '{agent_name}' not found")
+            raise HTTPException(
+                status_code=404, detail=f"Agent '{agent_name}' not found"
+            )
         return agent_info
     except HTTPException:
         raise
@@ -112,14 +115,16 @@ async def update_existing_agent(agent_name: str, request: UpdateAgentRequest):
             update_data["workflow_names"] = request.workflow_names
         if request.llm_config is not None:
             update_data["llm_config"] = request.llm_config
-        
+
         if not update_data:
             raise HTTPException(status_code=400, detail="No fields to update")
-        
+
         updated_agent = await update_agent(agent_name, update_data)
         if not updated_agent:
-            raise HTTPException(status_code=404, detail=f"Agent '{agent_name}' not found")
-        
+            raise HTTPException(
+                status_code=404, detail=f"Agent '{agent_name}' not found"
+            )
+
         return updated_agent
     except HTTPException:
         raise
@@ -142,7 +147,9 @@ async def delete_existing_agent(agent_name: str):
     try:
         deleted = await delete_agent(agent_name)
         if not deleted:
-            raise HTTPException(status_code=404, detail=f"Agent '{agent_name}' not found")
+            raise HTTPException(
+                status_code=404, detail=f"Agent '{agent_name}' not found"
+            )
         return
     except HTTPException:
         raise

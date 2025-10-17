@@ -1,6 +1,7 @@
 """
 Workflow API routes for CRUD operations
 """
+
 from fastapi import APIRouter, HTTPException, Depends, status
 from typing import List
 from app.database.schemas import (
@@ -106,9 +107,7 @@ async def get_workflow(workflow_name: str):
     summary="Update a workflow",
     description="Update workflow configuration (code, status, attributes, etc.)",
 )
-async def update_existing_workflow(
-    workflow_name: str, request: UpdateWorkflowRequest
-):
+async def update_existing_workflow(workflow_name: str, request: UpdateWorkflowRequest):
     """
     Update a workflow
     """
@@ -176,7 +175,9 @@ async def delete_existing_workflow(workflow_name: str):
     summary="Execute a workflow",
     description="Execute a workflow with input data validation",
 )
-async def execute_workflow_endpoint(workflow_name: str, request: ExecuteWorkflowRequest):
+async def execute_workflow_endpoint(
+    workflow_name: str, request: ExecuteWorkflowRequest
+):
     """
     Execute a workflow by validating input and making POST request to endpoint
     """
@@ -185,10 +186,12 @@ async def execute_workflow_endpoint(workflow_name: str, request: ExecuteWorkflow
         return {
             "status": "success",
             "workflow_name": request.workflow_name,
-            "result": result
+            "result": result,
         }
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         logger.error(f"Error executing workflow: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Failed to execute workflow: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to execute workflow: {str(e)}"
+        )

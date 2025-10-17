@@ -1,6 +1,7 @@
 """
 Chat API routes for CRUD operations
 """
+
 from fastapi import APIRouter, HTTPException, Depends, status
 from typing import List
 from app.database.schemas import Chat, CreateChatRequest

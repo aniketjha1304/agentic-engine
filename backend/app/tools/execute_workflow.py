@@ -1,10 +1,13 @@
 """
 Execute Workflow Tool - Executes workflows with input validation
 """
+
 from pydantic import BaseModel, Field
 from typing import Dict, Any
 from agent_builder.builders.tool_builder import ToolBuilder
-from app.services.workflow_execution_service import execute_workflow as execute_workflow_service
+from app.services.workflow_execution_service import (
+    execute_workflow as execute_workflow_service,
+)
 from app.utils.logger import get_logger
 import json
 
@@ -13,18 +16,21 @@ logger = get_logger(__name__)
 
 class ExecuteWorkflowInput(BaseModel):
     """Input schema for execute workflow tool"""
+
     workflow_name: str = Field(description="The name of the workflow to execute")
-    input_data: str = Field(description="JSON string containing the input data for the workflow")
+    input_data: str = Field(
+        description="JSON string containing the input data for the workflow"
+    )
 
 
 async def execute_workflow_tool(workflow_name: str, input_data: str) -> str:
     """
     Execute a workflow with the provided input data
-    
+
     Args:
         workflow_name: Name of the workflow to execute
         input_data: JSON string with input data
-        
+
     Returns:
         String containing execution result
     """
@@ -34,12 +40,12 @@ async def execute_workflow_tool(workflow_name: str, input_data: str) -> str:
             parsed_input = json.loads(input_data)
         except json.JSONDecodeError as e:
             return f"Invalid JSON input: {str(e)}"
-        
+
         # Execute workflow
         result = await execute_workflow_service(workflow_name, parsed_input)
-        
+
         return f"Workflow '{workflow_name}' executed successfully. Result: {json.dumps(result, indent=2)}"
-        
+
     except ValueError as e:
         logger.error(f"Validation error executing workflow: {str(e)}")
         return f"Validation error: {str(e)}"
