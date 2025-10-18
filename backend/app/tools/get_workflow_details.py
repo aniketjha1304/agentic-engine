@@ -16,22 +16,48 @@ class GetWorkflowDetailsInput(BaseModel):
     workflow_name: str = Field(
         description="The name of the workflow to get details for"
     )
+    return_interactive_component: bool = Field(
+        default=False,
+        description="Set to true when user wants to see/view workflow details in a visual format. Set to false for simple text response.",
+    )
 
 
-async def get_workflow_details(workflow_name: str) -> str:
+# Global state to track interactive component requests
+_last_interactive_workflow = None
+
+
+async def get_workflow_details(
+    workflow_name: str, return_interactive_component: bool = False
+) -> str:
     """
     Get workflow details including code and input parameters
 
     Args:
         workflow_name: Name of the workflow
+        return_interactive_component: If True, stores workflow for interactive display
 
     Returns:
         String containing workflow details
     """
+    global _last_interactive_workflow
+
     try:
         workflow = await get_workflow_by_name(workflow_name)
         if not workflow:
+            _last_interactive_workflow = None
             return f"Workflow '{workflow_name}' not found"
+
+        # If interactive component requested, store the data
+        if return_interactive_component:
+            _last_interactive_workflow = {
+                "name": workflow.name,
+                "description": workflow.description or "No description",
+                "code": workflow.code,
+                "status": workflow.status,
+                "endpoint": workflow.endpoint,
+                "input_parameters": workflow.input_parameters,
+            }
+            logger.info(f"Stored workflow '{workflow_name}' for interactive component")
 
         details = f"""
 Workflow: {workflow.name}
@@ -50,7 +76,20 @@ Endpoint: {workflow.endpoint or 'No endpoint defined'}
 
     except Exception as e:
         logger.error(f"Error getting workflow details: {str(e)}")
+        _last_interactive_workflow = None
         return f"Error retrieving workflow details: {str(e)}"
+
+
+def get_last_interactive_workflow():
+    """Get the last stored workflow for interactive component"""
+    global _last_interactive_workflow
+    return _last_interactive_workflow
+
+
+def clear_interactive_workflow():
+    """Clear stored workflow"""
+    global _last_interactive_workflow
+    _last_interactive_workflow = None
 
 
 def create_get_workflow_details_tool():
@@ -65,7 +104,9 @@ def create_get_workflow_details_tool():
         description=(
             """Get detailed information about a workflow including its code and input parameters.
             Use this tool when you need to understand what a workflow does or what inputs it requires.
-            Provide the workflow name to get its details."""
+            
+            IMPORTANT: Set return_interactive_component=true when user wants to VIEW/SEE workflow details (e.g., "show me details of workflow X", "what does workflow Y do").
+            Set return_interactive_component=false when checking workflow info for execution purposes."""
         )
     )
     tool_builder.set_schema(schema=GetWorkflowDetailsInput)

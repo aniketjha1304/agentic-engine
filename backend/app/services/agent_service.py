@@ -10,6 +10,7 @@ from app.database.workflow_queries import get_workflows_by_names
 from app.database.schemas import Agent, Workflow
 from app.tools.get_workflow_details import create_get_workflow_details_tool
 from app.tools.execute_workflow import create_execute_workflow_tool
+from app.tools.list_workflows import create_list_workflows_tool
 from app.utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -92,9 +93,11 @@ async def build_agent_runtime(agent_name: str):
         agent_builder.set_llm(default_llm_dict["azure_openai_gpt4o"])
 
     # Add default tools for workflow interaction
+    list_workflows_tool = create_list_workflows_tool()
     get_workflow_details_tool = create_get_workflow_details_tool()
     execute_workflow_tool = create_execute_workflow_tool()
 
+    agent_builder.add_tool(list_workflows_tool)
     agent_builder.add_tool(get_workflow_details_tool)
     agent_builder.add_tool(execute_workflow_tool)
 

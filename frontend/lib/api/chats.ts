@@ -51,7 +51,8 @@ export interface SendMessageRequest {
 export interface SendMessageResponse {
   message: string;
   chat_id: string;
-  workflow?: any;
+  additional_data?: AdditionalData;
+  workflow?: any; // Legacy - can be removed later
 }
 
 // Chat API Functions

@@ -360,12 +360,14 @@
       {
         "role": "user",
         "content": "Hello",
-        "timestamp": "2025-10-18T10:31:00"
+        "timestamp": "2025-10-18T10:31:00",
+        "additional_data": null
       },
       {
         "role": "assistant",
         "content": "Hi! How can I help you?",
-        "timestamp": "2025-10-18T10:31:05"
+        "timestamp": "2025-10-18T10:31:05",
+        "additional_data": null
       }
     ]
   }
@@ -389,12 +391,35 @@
     {
       "role": "user",
       "content": "Hello",
-      "timestamp": "2025-10-18T10:31:00"
+      "timestamp": "2025-10-18T10:31:00",
+      "additional_data": null
     },
     {
       "role": "assistant",
       "content": "Hi! How can I help you?",
-      "timestamp": "2025-10-18T10:31:05"
+      "timestamp": "2025-10-18T10:31:05",
+      "additional_data": null
+    },
+    {
+      "role": "user",
+      "content": "Show me all workflows",
+      "timestamp": "2025-10-18T10:32:00",
+      "additional_data": null
+    },
+    {
+      "role": "assistant",
+      "content": "Here are the available workflows...",
+      "timestamp": "2025-10-18T10:32:05",
+      "additional_data": {
+        "workflows": [
+          {
+            "name": "send_email",
+            "description": "Send an email",
+            "code": "...",
+            "status": "active"
+          }
+        ]
+      }
     }
   ]
 }
@@ -438,13 +463,81 @@
 }
 ```
 
-**Response:** `200 OK`
+**Response (Simple):** `200 OK`
 ```json
 {
-  "message": "I can help you with various tasks including executing workflows, answering questions, and more. I have access to tools like get_workflow_details and execute_workflow.",
-  "chat_id": "550e8400-e29b-41d4-a716-446655440000"
+  "message": "I can help you with various tasks including executing workflows, answering questions, and more. I have access to tools like list_workflows, get_workflow_details and execute_workflow.",
+  "chat_id": "550e8400-e29b-41d4-a716-446655440000",
+  "additional_data": null
 }
 ```
+
+**Response (Interactive - List Workflows):** `200 OK`
+```json
+{
+  "message": "Here are the available workflows:",
+  "chat_id": "550e8400-e29b-41d4-a716-446655440000",
+  "additional_data": {
+    "workflows": [
+      {
+        "name": "send_email",
+        "description": "Send an email to a recipient",
+        "code": "def send_email(to, subject, body):\n    return 'Email sent!'",
+        "status": "active",
+        "endpoint": "/execute/send_email",
+        "input_parameters": {
+          "type": "object",
+          "properties": {
+            "to": {"type": "string"},
+            "subject": {"type": "string"},
+            "body": {"type": "string"}
+          }
+        }
+      },
+      {
+        "name": "fetch_data",
+        "description": "Fetch data from an API",
+        "code": "def fetch_data(url):\n    return requests.get(url).json()",
+        "status": "active",
+        "endpoint": "/execute/fetch_data",
+        "input_parameters": null
+      }
+    ]
+  }
+}
+```
+
+**Response (Interactive - Workflow Details):** `200 OK`
+```json
+{
+  "message": "Here are the details for the send_email workflow:",
+  "chat_id": "550e8400-e29b-41d4-a716-446655440000",
+  "additional_data": {
+    "workflow": {
+      "name": "send_email",
+      "description": "Send an email to a recipient",
+      "code": "def send_email(to, subject, body):\n    # Implementation here\n    return {'status': 'sent'}",
+      "status": "active",
+      "endpoint": "http://workflow-service.com/send_email",
+      "input_parameters": {
+        "type": "object",
+        "properties": {
+          "to": {"type": "string", "format": "email"},
+          "subject": {"type": "string"},
+          "body": {"type": "string"}
+        },
+        "required": ["to", "subject", "body"]
+      }
+    }
+  }
+}
+```
+
+**Notes:**
+- When users ask to "show", "list", or "view" workflows, the response includes `additional_data.workflows`
+- When users ask for details about a specific workflow, the response includes `additional_data.workflow`
+- The `additional_data` field is `null` for regular conversational responses
+- Frontend should detect `additional_data` and render appropriate UI components
 
 ---
 

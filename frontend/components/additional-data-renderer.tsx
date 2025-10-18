@@ -12,6 +12,10 @@ interface AdditionalDataRendererProps {
 export function AdditionalDataRenderer({ data }: AdditionalDataRendererProps) {
   const [selectedWorkflow, setSelectedWorkflow] = useState<Workflow | null>(null);
 
+  // Debug logging
+  console.log('AdditionalDataRenderer received data:', data);
+  console.log('Workflows count:', data.workflows?.length);
+
   // Render workflows list
   if (data.workflows && data.workflows.length > 0) {
     return (

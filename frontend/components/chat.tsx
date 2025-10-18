@@ -113,11 +113,12 @@ export function Chat({
         agent_name: selectedAgentName,
         message: input.trim(),
       });
-      const assistantMessage = {
+      const assistantMessage: ChatMessage = {
         role: 'assistant' as const,
         content: response.message,
         timestamp: new Date().toISOString(),
         id: generateUUID(),
+        additional_data: response.additional_data,
       };
       setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {

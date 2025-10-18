@@ -10,7 +10,16 @@ from app.database.new_chat_queries import (
 )
 from app.services.agent_service import build_agent_runtime
 from app.utils.api_key_required import api_key_required
+from app.tools.list_workflows import (
+    get_last_interactive_workflows,
+    clear_interactive_workflows,
+)
+from app.tools.get_workflow_details import (
+    get_last_interactive_workflow,
+    clear_interactive_workflow,
+)
 from langchain_core.messages import HumanMessage, AIMessage
+from typing import Optional, Dict, Any
 import logging
 
 logger = logging.getLogger(__name__)
@@ -102,15 +111,38 @@ async def chat_with_agent(request: ChatMessageRequest):
         # Extract response text
         response_text = agent_response.get("output", "")
 
-        # Create assistant message
-        assistant_message = Message(role="assistant", content=response_text)
+        # Check for interactive components
+        additional_data = None
+
+        # Check if list_workflows was used with interactive component
+        workflows_data = get_last_interactive_workflows()
+        if workflows_data:
+            additional_data = {"workflows": workflows_data}
+            clear_interactive_workflows()
+            logger.info("Added workflows to interactive component")
+
+        # Check if get_workflow_details was used with interactive component
+        workflow_data = get_last_interactive_workflow()
+        if workflow_data:
+            additional_data = {"workflow": workflow_data}
+            clear_interactive_workflow()
+            logger.info("Added workflow details to interactive component")
+
+        # Create assistant message with additional_data
+        assistant_message = Message(
+            role="assistant", content=response_text, additional_data=additional_data
+        )
 
         # Save assistant message to chat
         await add_message_to_chat(request.chat_id, assistant_message)
 
         logger.info(f"Successfully processed message for chat {request.chat_id}")
 
-        return ChatMessageResponse(message=response_text, chat_id=request.chat_id)
+        return ChatMessageResponse(
+            message=response_text,
+            chat_id=request.chat_id,
+            additional_data=additional_data,
+        )
 
     except HTTPException:
         raise

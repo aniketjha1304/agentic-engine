@@ -14,6 +14,10 @@ class Message(BaseModel):
     role: str = Field(..., description="Role of the message sender (user/assistant)")
     content: str = Field(..., description="Content of the message")
     timestamp: datetime = Field(default_factory=datetime.utcnow)
+    additional_data: Optional[Dict[str, Any]] = Field(
+        None,
+        description="Additional structured data for interactive components (workflows, workflow details, etc.)",
+    )
 
 
 class Chat(BaseModel):
@@ -119,6 +123,10 @@ class ChatMessageRequest(BaseModel):
 class ChatMessageResponse(BaseModel):
     message: str
     chat_id: str
+    additional_data: Optional[Dict[str, Any]] = Field(
+        None,
+        description="Additional structured data for interactive components (workflows, workflow details, etc.)",
+    )
 
 
 class ExecuteWorkflowRequest(BaseModel):

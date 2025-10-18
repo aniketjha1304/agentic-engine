@@ -16,6 +16,11 @@ export const PreviewMessage = ({
   message: ChatMessage;
   isLoading: boolean;
 }) => {
+  // Debug logging
+  if (message.additional_data) {
+    console.log('Message has additional_data:', message.additional_data);
+  }
+  
   return (
     <motion.div
       className="w-full mx-auto max-w-3xl px-4 group/message"
