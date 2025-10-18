@@ -9,7 +9,7 @@ API_KEYS = [os.getenv("API_KEY")]
 
 # MongoDB Configuration
 MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017")
-MONGO_DB_NAME = os.getenv("MONGO_DB_NAME", "agentic_engine")
+MONGO_DB_NAME = os.getenv("MONGO_DB_NAME", "agentic-engine")
 
 
 AZURE_GPT4O_BASE_URL = os.getenv("AZURE_GPT4O_BASE_URL")
