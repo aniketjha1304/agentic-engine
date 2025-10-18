@@ -27,20 +27,47 @@ export function Chat({
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [attachments, setAttachments] = useState([]);
-  const [chatId, setChatId] = useState(null);
+  const [chatId, setChatId] = useState(id || null);
+  const [chatName, setChatName] = useState('');
+  const [loadError, setLoadError] = useState(false);
 
   const [messagesContainerRef, messagesEndRef] = useScrollToBottom();
 
+  // Load existing chat if ID is provided
   useEffect(() => {
-    if (selectedAgentName && !chatId) {
-      createNewChat();
+    if (id && id.trim() !== '' && !loadError) {
+      setChatId(id);
+      loadChat(id);
+    } else if (!id || id.trim() === '') {
+      // New chat, clear everything
+      setChatId(null);
+      setMessages([]);
+      setChatName('');
+      setLoadError(false);
     }
-  }, [selectedAgentName]);
+  }, [id]);
+
+  const loadChat = async (chatId: string) => {
+    try {
+      const chat = await chatsAPI.getById(chatId);
+      setMessages(chat.messages || []);
+      setChatName(chat.name);
+      setLoadError(false);
+      // Set the agent from the chat if not already selected
+      if (onSelectAgent && chat.agent_name) {
+        onSelectAgent(chat.agent_name);
+      }
+    } catch (error) {
+      setLoadError(true);
+      toast.error('Chat not found');
+      // Don't auto-redirect, just show error state
+    }
+  };
 
   const createNewChat = async () => {
     if (!selectedAgentName) {
       toast.error('Please select an agent first');
-      return;
+      return null;
     }
     try {
       const newChat = await chatsAPI.create({
@@ -48,8 +75,13 @@ export function Chat({
         agent_name: selectedAgentName,
       });
       setChatId(newChat.id);
+      setChatName(newChat.name);
+      // Update URL to the new chat
+      window.history.replaceState({}, '', `/chat/${newChat.id}`);
+      return newChat.id;
     } catch (error) {
       toast.error(error.message || 'Failed to create chat');
+      return null;
     }
   };
 
@@ -59,12 +91,15 @@ export function Chat({
       if (!selectedAgentName) toast.error('Please select an agent first');
       return;
     }
-    if (!chatId) {
-      await createNewChat();
-      return;
+    
+    // Create chat on first message if doesn't exist
+    let currentChatId = chatId;
+    if (!currentChatId) {
+      currentChatId = await createNewChat();
+      if (!currentChatId) return;
     }
     const userMessage = {
-      role: 'user',
+      role: 'user' as const,
       content: input.trim(),
       timestamp: new Date().toISOString(),
       id: generateUUID(),
@@ -74,12 +109,12 @@ export function Chat({
     setIsLoading(true);
     try {
       const response = await chatsAPI.sendMessage({
-        chat_id: chatId,
+        chat_id: currentChatId,
         agent_name: selectedAgentName,
         message: input.trim(),
       });
       const assistantMessage = {
-        role: 'assistant',
+        role: 'assistant' as const,
         content: response.message,
         timestamp: new Date().toISOString(),
         id: generateUUID(),
@@ -95,9 +130,42 @@ export function Chat({
 
   const stop = () => setIsLoading(false);
 
+  const handleRenameChat = async (newName: string) => {
+    if (!chatId || !newName.trim()) return;
+    try {
+      await chatsAPI.update(chatId, { name: newName.trim() });
+      setChatName(newName.trim());
+      toast.success('Chat renamed successfully');
+    } catch (error) {
+      toast.error('Failed to rename chat');
+    }
+  };
+
+  if (loadError) {
+    return (
+      <div className="flex flex-col min-w-0 h-dvh bg-background">
+        <ChatHeader 
+          selectedAgentName={selectedAgentName} 
+          onSelectAgent={onSelectAgent} 
+        />
+        <div className="flex flex-col items-center justify-center flex-1 gap-4">
+          <p className="text-xl font-semibold">Chat not found</p>
+          <p className="text-muted-foreground">This chat may have been deleted.</p>
+          <a href="/" className="text-primary hover:underline">Go to home</a>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col min-w-0 h-dvh bg-background">
-      <ChatHeader selectedAgentName={selectedAgentName} onSelectAgent={onSelectAgent} />
+      <ChatHeader 
+        chatId={chatId} 
+        chatName={chatName}
+        onRenameChat={handleRenameChat}
+        selectedAgentName={selectedAgentName} 
+        onSelectAgent={onSelectAgent} 
+      />
       <div ref={messagesContainerRef} className="flex flex-col min-w-0 gap-6 flex-1 overflow-y-scroll pt-4">
         {messages.length === 0 && <Overview />}
         {messages.map((message, index) => (

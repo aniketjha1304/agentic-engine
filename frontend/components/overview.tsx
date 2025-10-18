@@ -14,11 +14,12 @@ export const Overview = () => {
       transition={{ delay: 0.5 }}
     >
       <div className="rounded-xl p-6 flex flex-col gap-8 leading-relaxed text-center max-w-xl">
-        <p className="text-2xl font-semibold">
-          How can I help you?
+        <p className="flex items-center justify-center gap-2 text-2xl font-semibold">
+          <MessageIcon size={32} />
+          How can I help you today?
         </p>
-        <p className="text-lg text-gray-700">
-          Lisa, your digital AI material planner.
+        <p className="text-lg text-muted-foreground">
+          Select an agent and start a conversation to get started.
         </p>
       </div>
     </motion.div>

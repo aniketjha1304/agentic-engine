@@ -1,6 +1,6 @@
 'use client';
 
-import { startTransition, useMemo, useOptimistic, useState, useEffect } from 'react';
+import { startTransition, useMemo, useState, useEffect } from 'react';
 import useSWR from 'swr';
 import { Button } from '@/components/ui/button';
 import {
@@ -22,7 +22,6 @@ export function AgentSelector({
   onSelectAgent?: (agentName: string) => void;
 } & React.ComponentProps<typeof Button>) {
   const [open, setOpen] = useState(false);
-  const [optimisticAgentName, setOptimisticAgentName] = useOptimistic(selectedAgentName || '');
 
   const { data: agents = [], isLoading } = useSWR<Agent[]>(
     'agents',
@@ -30,8 +29,8 @@ export function AgentSelector({
   );
 
   const selectedAgent = useMemo(
-    () => agents.find((agent) => agent.name === optimisticAgentName),
-    [optimisticAgentName, agents]
+    () => agents.find((agent) => agent.name === selectedAgentName),
+    [selectedAgentName, agents]
   );
 
   // Auto-select first agent if none selected
@@ -78,12 +77,11 @@ export function AgentSelector({
             onSelect={() => {
               setOpen(false);
               startTransition(() => {
-                setOptimisticAgentName(agent.name);
                 onSelectAgent?.(agent.name);
               });
             }}
             className="gap-4 group/item flex flex-row justify-between items-center"
-            data-active={agent.name === optimisticAgentName}
+            data-active={agent.name === selectedAgentName}
           >
             <div className="flex flex-col gap-1 items-start">
               <div className="font-medium">{agent.name}</div>

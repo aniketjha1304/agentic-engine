@@ -85,7 +85,7 @@ export function SidebarHistory() {
             {chats.map((chat) => (
               <SidebarMenuItem key={chat.id}>
                 <SidebarMenuButton asChild isActive={chat.id === id}>
-                  <Link href={`/${chat.id}`} onClick={() => setOpenMobile(false)}>
+                  <Link href={`/chat/${chat.id}`} onClick={() => setOpenMobile(false)}>
                     <span>{chat.name}</span>
                   </Link>
                 </SidebarMenuButton>
