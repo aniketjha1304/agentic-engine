@@ -1,44 +1,20 @@
-'use client';
+﻿'use client';
 
-import type { Message } from 'ai';
 import cx from 'classnames';
 import { motion } from 'framer-motion';
-import type { Dispatch, SetStateAction } from 'react';
-
-import type { Vote } from '@/lib/db/schema';
-
-import type { UIBlock } from './block';
-import { DocumentToolResult } from './document'; // We'll reuse this component
 import { SparklesIcon } from './icons';
 import { Markdown } from './markdown';
-import { MessageActions } from './message-actions';
-import { PreviewAttachment } from './preview-attachment';
-import { Weather } from './weather';
-import { WorkflowResult } from './workflow';
-import type { Workflow } from './workflow';
-import type { WorkflowBlockProps } from './workflow-block';
-// Import the new component
+import { ChatMessage } from '@/lib/api';
 
-// Define a CustomMessage interface that extends Message
-interface CustomMessage extends Message {
-  workflow?: Array<{ id: string; title: string; content: string }>;
-}
 export const PreviewMessage = ({
   chatId,
   message,
-  block,
-  setBlock,
-  vote,
   isLoading,
 }: {
   chatId: string;
-  message: CustomMessage;
-  block: WorkflowBlockProps;
-  setBlock: Dispatch<SetStateAction<WorkflowBlockProps>>;
-  vote: Vote | undefined;
+  message: ChatMessage;
   isLoading: boolean;
 }) => {
-
   return (
     <motion.div
       className="w-full mx-auto max-w-3xl px-4 group/message"
@@ -60,39 +36,9 @@ export const PreviewMessage = ({
         <div className="flex flex-col gap-2 w-full">
           {message.content && (
             <div className="flex flex-col gap-4">
-              <Markdown>{message.content as string}</Markdown>
+              <Markdown>{message.content}</Markdown>
             </div>
           )}
-
-          {/* Handle workflow messages */}
-          {message.workflow && message.workflow.length === 1 && (
-            <div>
-              <WorkflowResult
-                workflow={message.workflow[0] as Workflow} 
-                setBlock={setBlock}
-              />
-            </div>
-          )}
-
-
-          {message.experimental_attachments && (
-            <div className="flex flex-row gap-2">
-              {message.experimental_attachments.map((attachment) => (
-                <PreviewAttachment
-                  key={attachment.url}
-                  attachment={attachment}
-                />
-              ))}
-            </div>
-          )}
-
-          <MessageActions
-            key={`action-${message.id}`}
-            chatId={chatId}
-            message={message}
-            vote={vote}
-            isLoading={isLoading}
-          />
         </div>
       </div>
     </motion.div>
@@ -100,27 +46,16 @@ export const PreviewMessage = ({
 };
 
 export const ThinkingMessage = () => {
-  const role = 'assistant';
-
   return (
     <motion.div
-      className="w-full mx-auto max-w-3xl px-4 group/message "
+      className="w-full mx-auto max-w-3xl px-4"
       initial={{ y: 5, opacity: 0 }}
       animate={{ y: 0, opacity: 1, transition: { delay: 1 } }}
-      data-role={role}
     >
-      <div
-        className={cx(
-          'flex gap-4 group-data-[role=user]/message:px-3 w-full group-data-[role=user]/message:w-fit group-data-[role=user]/message:ml-auto group-data-[role=user]/message:max-w-2xl group-data-[role=user]/message:py-2 rounded-xl',
-          {
-            'group-data-[role=user]/message:bg-muted': true,
-          },
-        )}
-      >
+      <div className="flex gap-4 w-full">
         <div className="size-8 flex items-center rounded-full justify-center ring-1 shrink-0 ring-border">
           <SparklesIcon size={14} />
         </div>
-
         <div className="flex flex-col gap-2 w-full">
           <div className="flex flex-col gap-4 text-muted-foreground">
             Thinking...

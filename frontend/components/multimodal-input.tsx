@@ -50,7 +50,7 @@ export function MultimodalInput({
   stop,
   attachments,
   setAttachments,
-  messages,
+  messages = [],
   setMessages,
   append,
   handleSubmit,
@@ -63,9 +63,9 @@ export function MultimodalInput({
   stop: () => void;
   attachments: Array<Attachment>;
   setAttachments: Dispatch<SetStateAction<Array<Attachment>>>;
-  messages: Array<Message>;
-  setMessages: Dispatch<SetStateAction<Array<Message>>>;
-  append: (
+  messages?: Array<Message>;
+  setMessages?: Dispatch<SetStateAction<Array<Message>>>;
+  append?: (
     message: Message | CreateMessage,
     chatRequestOptions?: ChatRequestOptions,
   ) => Promise<string | null | undefined>;
@@ -217,10 +217,12 @@ export function MultimodalInput({
                   onClick={async () => {
                     window.history.replaceState({}, '', `/chat/${chatId}`);
 
-                    append({
-                      role: 'user',
-                      content: suggestedAction.action,
-                    });
+                    if (append) {
+                      append({
+                        role: 'user',
+                        content: suggestedAction.action,
+                      });
+                    }
                   }}
                   className="text-left border rounded-xl px-4 py-3.5 text-sm flex-1 gap-1 sm:flex-col w-full h-auto justify-start items-start"
                 >
@@ -293,7 +295,9 @@ export function MultimodalInput({
           onClick={(event) => {
             event.preventDefault();
             stop();
-            setMessages((messages) => sanitizeUIMessages(messages));
+            if (setMessages) {
+              setMessages((messages) => sanitizeUIMessages(messages));
+            }
           }}
         >
           <StopIcon size={14} />

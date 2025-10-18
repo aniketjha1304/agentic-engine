@@ -12,14 +12,11 @@ import './globals.css';
 
 // Metadata configuration for the entire application
 export const metadata: Metadata = {
-  // Base URL for the application (used for canonical URLs and open graph tags)
-  metadataBase: new URL('https://recall.space'),
+  metadataBase: new URL('https://agentic-engine.dev'),
   
-  // Default title of the application
-  title: 'Lisa AI',
+  title: 'Agentic Engine',
   
-  // Description for SEO and sharing
-  description: 'Lisa, intelligent material planner by Recall Space',
+  description: 'Open-source agentic AI platform',
 };
 
 // Viewport configuration to prevent auto-zoom on mobile devices

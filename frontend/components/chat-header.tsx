@@ -1,17 +1,23 @@
-'use client';
+﻿'use client';
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useWindowSize } from 'usehooks-ts';
 
-import { ModelSelector } from '@/components/model-selector';
+import { AgentSelector } from '@/components/agent-selector';
 import { SidebarToggle } from '@/components/sidebar-toggle';
 import { Button } from '@/components/ui/button';
 import { BetterTooltip } from '@/components/ui/tooltip';
-import { PlusIcon } from './icons'; // Removed VercelIcon as it’s no longer used
+import { PlusIcon } from './icons';
 import { useSidebar } from './ui/sidebar';
 
-export function ChatHeader({ selectedModelId }: { selectedModelId: string }) {
+export function ChatHeader({
+  selectedAgentName,
+  onSelectAgent,
+}: {
+  selectedAgentName?: string;
+  onSelectAgent?: (agentName: string) => void;
+}) {
   const router = useRouter();
   const { open } = useSidebar();
 
@@ -35,8 +41,9 @@ export function ChatHeader({ selectedModelId }: { selectedModelId: string }) {
           </Button>
         </BetterTooltip>
       )}
-      <ModelSelector
-        selectedModelId={selectedModelId}
+      <AgentSelector
+        selectedAgentName={selectedAgentName}
+        onSelectAgent={onSelectAgent}
         className="order-1 md:order-2"
       />
     </header>
