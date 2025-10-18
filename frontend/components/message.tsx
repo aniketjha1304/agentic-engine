@@ -4,6 +4,7 @@ import cx from 'classnames';
 import { motion } from 'framer-motion';
 import { SparklesIcon } from './icons';
 import { Markdown } from './markdown';
+import { AdditionalDataRenderer } from './additional-data-renderer';
 import { ChatMessage } from '@/lib/api';
 
 export const PreviewMessage = ({
@@ -38,6 +39,11 @@ export const PreviewMessage = ({
             <div className="flex flex-col gap-4">
               <Markdown>{message.content}</Markdown>
             </div>
+          )}
+          
+          {/* Render additional data (workflows, charts, etc.) */}
+          {message.additional_data && message.role === 'assistant' && (
+            <AdditionalDataRenderer data={message.additional_data} />
           )}
         </div>
       </div>

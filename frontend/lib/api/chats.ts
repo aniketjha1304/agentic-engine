@@ -1,11 +1,31 @@
 import { apiFetch } from './config';
 
+// Workflow Types
+export interface Workflow {
+  name: string;
+  description: string;
+  code: string;
+  status?: string;
+  endpoint?: string;
+  input_parameters?: any;
+  created_at?: string;
+  updated_at?: string;
+}
+
+// Additional Data Types
+export interface AdditionalData {
+  workflows?: Workflow[];
+  workflow?: Workflow;
+  [key: string]: any; // Allow for future extensions
+}
+
 // Chat Types
 export interface ChatMessage {
   role: 'user' | 'assistant' | 'system';
   content: string;
   timestamp?: string;
   id?: string;
+  additional_data?: AdditionalData;
 }
 
 export interface Chat {
